@@ -4,17 +4,23 @@ const Models = require('../Models')
 
 
 const getAllVillains = async (request, response) => {
-  const villains = await Models.villains.findAll({ attributes: ['name', 'movie', 'slug'] })
+  const villains = await Models.villains.findAll() // { attributes: ['name', 'movie', 'slug'] })
 
   return response.send(villains)
 }
 
 const getVillainBySlug = async (request, response) => {
-  const { slug } = request.params
+  try {
+    const { slug } = request.params
 
-  const foundVillain = await Models.villains.findOne({ where: { slug }, attributes: ['name', 'movie', 'slug'] })
+    const foundVillain = await Models.villains.findOne({ where: { slug } }) // attributes: ['name', 'movie', 'slug'] })
 
-  return foundVillain ? response.send(foundVillain) : response.sendStatus(404)
+    return foundVillain
+      ? response.send(foundVillain)
+      : response.sendStatus(404)
+  } catch (error) {
+    return response.status(500).send('Unable to retrieve Villain, please try again')
+  }
 }
 
 const saveNewVillain = async (request, response) => {
@@ -28,6 +34,5 @@ const saveNewVillain = async (request, response) => {
 
   return response.status(201).send(newVillain)
 }
-
 
 module.exports = { getAllVillains, getVillainBySlug, saveNewVillain }
